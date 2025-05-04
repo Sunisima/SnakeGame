@@ -12,8 +12,9 @@ public class HelloController implements Initializable {
     @FXML
     private Pane gamePane;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Food food = new Food(gamePane);
+        Food food = new Food(gamePane); //Adds a Food object (apple) to the scene automatically every time the game starts.
     }
 }
