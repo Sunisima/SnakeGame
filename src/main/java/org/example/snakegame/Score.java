@@ -1,35 +1,53 @@
 package org.example.snakegame;
 
+/**
+ * Class to control the score
+ *
+ */
+
 public class Score
 {
     // Variable to store the score
     private int value;
 
-    // Constructor
+    /**
+     * Constructor
+     */
     public Score()
     {
         this.value = 0;
     }
 
-    // Update the score when the snake eats a food
+    /**
+     * Updates score for when a food object is eaten
+     * @param points
+     */
     public void updateScore(int points)
     {
         this.value += points;
     }
 
-    // Get current score value
+    /**
+     * Gets current score
+     * @return
+     */
     public int getScore()
     {
         return this.value;
     }
 
-    // Resets the score to 0
+    /**
+     * Resets score to 0
+     */
     public void resetScore()
     {
         this.value = 0;
     }
 
-    // Displays score
+    /**
+     * Displays current score
+     * @return
+     */
     public String displayScore()
     {
         return "Score: " + this.value;
