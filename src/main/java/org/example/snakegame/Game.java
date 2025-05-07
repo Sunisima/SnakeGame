@@ -31,8 +31,11 @@ public class Game extends Application {
     private final Score score = new Score();
     private final Text scoreText = new Text();
     private final Text lengthText = new Text();
+    private Timeline resetSpeedTimer;
+    private Timeline resetHeadTimer;
 
-    private Timeline timeline;
+
+    private Timeline gameLoop;
 
     //Trigger insane mode when score reaches this value
     private int nextInsaneTrigger = 10;
@@ -84,13 +87,13 @@ public class Game extends Application {
      * Starts the main game loop using a Timeline.
      */
     private void startGameLoop() {
-        timeline = new Timeline(new KeyFrame(Duration.millis(200), e -> {
+        gameLoop = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
             snake.move();
             checkFoodCollision();
             render();
         }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
+        gameLoop.setCycleCount(Timeline.INDEFINITE);
+        gameLoop.play();
     }
 
     /**
@@ -122,10 +125,17 @@ public class Game extends Application {
     private void spawnFood() {
         food = new Food(gamePane);
     }
+
+
     /**
-     * Checks for collision between snake's head and food.
-     * If collision happens, grows snake and updates score.
-     * Also triggers Insane Mode when score is multiple of 10.
+     * Checks if the snake's head has collided with the food.
+     * If a collision is detected:
+     * - redApple: no effect.
+     * - blueApple: increases snake speed for 3 seconds, then resets.
+     * - greenApple: enlarges snake head for 4 seconds, then resets.
+     * After any effect, the snake grows, score increases,
+     * and a new food item is spawned. If the score crosses a multiple of 10,
+     * Insane Mode is triggered.
      */
     private void checkFoodCollision() {
         Segment head = snake.getSegments().get(0);
@@ -137,6 +147,32 @@ public class Game extends Application {
 
         double distance = Math.hypot(headX - foodX, headY - foodY);
         if (distance < TILE_SIZE) {
+            // Apply effect based on apple type
+            switch (food.getCurrentType()) {
+                case redApple -> { //No effect
+                }
+                case blueApple -> {
+                    snake.setSpeed(150);
+                    restartGameLoop();
+
+                    if (resetSpeedTimer != null) resetSpeedTimer.stop();
+                    resetSpeedTimer = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
+                        snake.setSpeed(200);
+                        restartGameLoop();
+                    }));
+                    resetSpeedTimer.play();
+                }
+                case greenApple -> {
+                    snake.enlargeHead();
+
+                    if (resetHeadTimer != null) resetHeadTimer.stop();
+                    resetHeadTimer = new Timeline(new KeyFrame(Duration.seconds(4), e -> {
+                        snake.resetHeadSize();
+                    }));
+                    resetHeadTimer.play();
+                }
+            }
+
             snake.grow();
             score.updateScore(1);
             gamePane.getChildren().remove(food.getAppleImage());
@@ -144,10 +180,10 @@ public class Game extends Application {
 
             if (score.getScore() >= nextInsaneTrigger) {
                 triggerInsaneMode();
-                // Next trigger at +10 score
                 nextInsaneTrigger += 10;
             }
         }
+
     }
     /**
      * Triggers Insane Mode:
@@ -172,6 +208,21 @@ public class Game extends Application {
         }));
         blinkTimeline.play();
     }
+
+    /**
+     * Restarts the game loop with the current snake speed.
+     * Necessary when the snake speed changes temporarily (e.g., after eating blue food).
+     */
+    private void restartGameLoop() {
+        gameLoop.stop();
+        gameLoop.getKeyFrames().setAll(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
+            snake.move();
+            checkFoodCollision();
+            render();
+        }));
+        gameLoop.play();
+    }
+
 
     public static void main(String[] args) {
         launch();

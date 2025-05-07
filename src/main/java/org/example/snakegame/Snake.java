@@ -8,6 +8,7 @@ import java.util.List;
  */
 public class Snake
 {
+    private double speed = 200; // default speed in ms
     private Direction direction = Direction.RIGHT;
     private final List<Segment> segments = new ArrayList<>();
 
@@ -65,6 +66,27 @@ public class Snake
         return segments.subList(1, segments.size()).contains(head);
     }
 
+    /**
+     * Visually enlarges the snake's head by adding an extra segment at the front.
+     * This is only a temporary effect and should be reset after a few seconds.
+     */
+    public void enlargeHead() {
+        Segment head = segments.get(0);
+        segments.set(0, new Segment(head.getX(), head.getY()));
+        segments.add(0, new Segment(head.getX(), head.getY()));
+    }
+
+    /**
+     * Resets the snake's head size to normal by removing the extra front segment when the enlargeHead() is used.
+     * Removes the additional segment if present.
+     */
+    public void resetHeadSize() {
+        if (segments.size() > 1) {
+            segments.remove(0);
+        }
+    }
+
+
 
     //Getter and setter region
 
@@ -106,7 +128,15 @@ public class Snake
     public int getLength()
     {
         return segments.size();
-
-        //Bør anvendes i Game-klassen i render metoden
     }
+
+    public double getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(double newSpeed) {
+        this.speed = newSpeed;
+    }
+
+
 }

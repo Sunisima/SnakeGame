@@ -1,61 +1,91 @@
 package org.example.snakegame;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
+
 import java.util.Random;
 
 /**
- * The food for the snake to eat.
+ * Represents a food item that randomly appears in the game.
+ * Each food has a type (red, blue, green) and triggers different effects when eaten.
+ * The food relocates itself after a random time between 4–8 seconds.
  */
+
 public class Food {
     private final ImageView imageView;
     private final double imageWidth = 30;
     private final double imageHeight = 35;
     private final Random random = new Random();
+    private final Pane gamePane;
+    private Timeline lifetimeTimer;
+    private FoodType currentType;
 
     /**
-     * Creates a Food object (an apple) and adds it to the gamePane.
-     * The image of the apple will be placed randomly within the pane.
-     * @param gamePane The Pane where the apple appears
+     * Creates a Food object and spawns it in the given pane.
+     * @param gamePane The pane where the food should appear.
      */
     public Food(Pane gamePane) {
-        //Loads and creates the image of an apple to be shown in the gamePane
-        Image appleImage = new Image(getClass().getResource("/Pictures/pixel_apple.png").toExternalForm());
-        imageView = new ImageView(appleImage);
-
-        // Sets the size of the Food (apple)
+        this.gamePane = gamePane;
+        imageView = new ImageView();
         imageView.setFitWidth(imageWidth);
         imageView.setFitHeight(imageHeight);
-        imageView.setPreserveRatio(true);
+        imageView.setPreserveRatio(false);
 
-        // Adds the image of the apple to Pane
         gamePane.getChildren().add(imageView);
-        // Places the apples randomly each time the game starts anew.
-        relocate(gamePane);
+        relocate();
     }
 
     /**
-     * Gets the size of the Pane and get a random location to put the image of the apple.
-     * @param gamePane The Pane where the apple appears
+     * Places the food randomly in the pane with a random food type and image.
+     * Also sets a timer to auto-relocate after 4–8 seconds.
      */
-    public void relocate(Pane gamePane) {
+    public void relocate() {
+        // Choose random type
+        FoodType[] types = FoodType.values();
+        currentType = types[random.nextInt(types.length)];
+
+        // Choose image based on type
+        String imagePath = switch (currentType) {
+            case redApple -> "/Pictures/red_apple.png";
+            case blueApple -> "/Pictures/blue_apple.png";
+            case greenApple -> "/Pictures/green_apple.png";
+        };
+
+        Image image = new Image(getClass().getResource(imagePath).toExternalForm());
+        imageView.setImage(image);
+
+        // Set new random position
         double maxX = gamePane.getPrefWidth() - imageWidth;
         double maxY = gamePane.getPrefHeight() - imageHeight;
+        imageView.setLayoutX(random.nextDouble() * maxX);
+        imageView.setLayoutY(random.nextDouble() * maxY);
 
-        double x = random.nextDouble() * maxX;
-        double y = random.nextDouble() * maxY;
-
-        imageView.setLayoutX(x);
-        imageView.setLayoutY(y);
+        // Set a timer to relocate the food after 4–8 seconds
+        if (lifetimeTimer != null) lifetimeTimer.stop();
+        int seconds = 4 + random.nextInt(5);
+        lifetimeTimer = new Timeline(new KeyFrame(Duration.seconds(seconds), e -> relocate()));
+        lifetimeTimer.play();
     }
 
     /**
-     * Returns the imageView representing the apple in the scene.
-     * Can be used for other methods to access the apples position or check for collision.
-     * @return The ImageView displaying the appleImage
+     * Returns the ImageView node used to render the food in the scene.
+     * This can be used for positioning or collision detection.
+     * @return The ImageView for the food.
      */
     public ImageView getAppleImage() {
         return imageView;
+    }
+
+    /**
+     * Returns the current food type (redApple, blueApple, greenApple).
+     * Can be used to determine which effect to apply when eaten.
+     * @return The type of this food.
+     */
+    public FoodType getCurrentType() {
+        return currentType;
     }
 }
