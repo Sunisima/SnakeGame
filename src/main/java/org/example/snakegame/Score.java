@@ -2,7 +2,6 @@ package org.example.snakegame;
 
 /**
  * Class to control the score
- *
  */
 
 public class Score
