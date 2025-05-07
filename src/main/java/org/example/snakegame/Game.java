@@ -115,38 +115,6 @@ public class Game extends Application {
     /**
      * Renders the snake, score and length on screen.
      */
-    /*private void render() {
-        // Remove old segments
-        gamePane.getChildren().removeAll(snakeNodes);
-        snakeNodes.clear();
-
-        for (int i = 0; i < snake.getSegments().size(); i++) {
-            Segment s = snake.getSegments().get(i);
-
-            // Head is larger if enlarged
-            double radius = (i == 0 && snake.isHeadEnlarged()) ? TILE_SIZE / 1.2 : TILE_SIZE / 2.0;
-
-            Circle c = new Circle(radius, Color.PINK);
-            c.setLayoutX(s.getX() * TILE_SIZE + TILE_SIZE / 2.0);
-            c.setLayoutY(s.getY() * TILE_SIZE + TILE_SIZE / 2.0);
-
-            snakeNodes.add(c);
-        }
-
-        // Draw each segment of the snake
-        for (Segment s : snake.getSegments()) {
-            Circle c = new Circle(TILE_SIZE / 2.0, Color.PINK);
-            c.setLayoutX(s.getX() * TILE_SIZE + TILE_SIZE / 2.0);
-            c.setLayoutY(s.getY() * TILE_SIZE + TILE_SIZE / 2.0);
-            snakeNodes.add(c);
-        }
-
-        gamePane.getChildren().addAll(snakeNodes);
-
-        // Update display score and length
-        scoreText.setText("Score: " + score.getScore());
-        lengthText.setText("Length: " + snake.getLength());
-    }*/
 
     private void render() {
         // Remove old segments
