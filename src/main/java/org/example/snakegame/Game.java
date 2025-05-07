@@ -99,16 +99,55 @@ public class Game extends Application {
     /**
      * Renders the snake, score and length on screen.
      */
-    private void render() {
+    /*private void render() {
         // Remove old segments
         gamePane.getChildren().removeAll(snakeNodes);
         snakeNodes.clear();
+
+        for (int i = 0; i < snake.getSegments().size(); i++) {
+            Segment s = snake.getSegments().get(i);
+
+            // Head is larger if enlarged
+            double radius = (i == 0 && snake.isHeadEnlarged()) ? TILE_SIZE / 1.2 : TILE_SIZE / 2.0;
+
+            Circle c = new Circle(radius, Color.PINK);
+            c.setLayoutX(s.getX() * TILE_SIZE + TILE_SIZE / 2.0);
+            c.setLayoutY(s.getY() * TILE_SIZE + TILE_SIZE / 2.0);
+
+            snakeNodes.add(c);
+        }
 
         // Draw each segment of the snake
         for (Segment s : snake.getSegments()) {
             Circle c = new Circle(TILE_SIZE / 2.0, Color.PINK);
             c.setLayoutX(s.getX() * TILE_SIZE + TILE_SIZE / 2.0);
             c.setLayoutY(s.getY() * TILE_SIZE + TILE_SIZE / 2.0);
+            snakeNodes.add(c);
+        }
+
+        gamePane.getChildren().addAll(snakeNodes);
+
+        // Update display score and length
+        scoreText.setText("Score: " + score.getScore());
+        lengthText.setText("Length: " + snake.getLength());
+    }*/
+
+    private void render() {
+        // Remove old segments
+        gamePane.getChildren().removeAll(snakeNodes);
+        snakeNodes.clear();
+
+        // Draw each segment of the snake
+        for (int i = 0; i < snake.getSegments().size(); i++) {
+            Segment s = snake.getSegments().get(i);
+
+            // If heas is enlarged, increase size
+            double radius = (i == 0 && snake.isHeadEnlarged()) ? TILE_SIZE / 1.2 : TILE_SIZE / 2.0;
+
+            Circle c = new Circle(radius, Color.PINK);
+            c.setLayoutX(s.getX() * TILE_SIZE + TILE_SIZE / 2.0);
+            c.setLayoutY(s.getY() * TILE_SIZE + TILE_SIZE / 2.0);
+
             snakeNodes.add(c);
         }
 
@@ -152,12 +191,12 @@ public class Game extends Application {
                 case redApple -> { //No effect
                 }
                 case blueApple -> {
-                    snake.setSpeed(150);
+                    snake.setSpeed(100);
                     restartGameLoop();
 
                     if (resetSpeedTimer != null) resetSpeedTimer.stop();
-                    resetSpeedTimer = new Timeline(new KeyFrame(Duration.seconds(3), e -> {
-                        snake.setSpeed(200);
+                    resetSpeedTimer = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
+                        snake.setSpeed(300);
                         restartGameLoop();
                     }));
                     resetSpeedTimer.play();
@@ -166,7 +205,7 @@ public class Game extends Application {
                     snake.enlargeHead();
 
                     if (resetHeadTimer != null) resetHeadTimer.stop();
-                    resetHeadTimer = new Timeline(new KeyFrame(Duration.seconds(4), e -> {
+                    resetHeadTimer = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
                         snake.resetHeadSize();
                     }));
                     resetHeadTimer.play();
@@ -214,14 +253,23 @@ public class Game extends Application {
      * Necessary when the snake speed changes temporarily (e.g., after eating blue food).
      */
     private void restartGameLoop() {
-        gameLoop.stop();
-        gameLoop.getKeyFrames().setAll(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
+        // Stop the current game loop before restarting
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
+
+        // Create a new game loop with the updated speed
+        gameLoop = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
             snake.move();
             checkFoodCollision();
             render();
         }));
+
+        // Restart the game loop
+        gameLoop.setCycleCount(Timeline.INDEFINITE);
         gameLoop.play();
     }
+
 
 
     public static void main(String[] args) {

@@ -66,8 +66,7 @@ public class Food {
 
         // Set a timer to relocate the food after 4–8 seconds
         if (lifetimeTimer != null) lifetimeTimer.stop();
-        int seconds = 4 + random.nextInt(5);
-        lifetimeTimer = new Timeline(new KeyFrame(Duration.seconds(seconds), e -> relocate()));
+        lifetimeTimer = new Timeline(new KeyFrame(Duration.seconds(7), e -> relocate()));
         lifetimeTimer.play();
     }
 

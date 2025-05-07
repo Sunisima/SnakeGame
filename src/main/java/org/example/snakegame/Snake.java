@@ -8,7 +8,8 @@ import java.util.List;
  */
 public class Snake
 {
-    private double speed = 200; // default speed in ms
+    private boolean headEnlarged = false; // Keep track of whether the head is enlarged.
+    private double speed = 300; // default speed in ms
     private Direction direction = Direction.RIGHT;
     private final List<Segment> segments = new ArrayList<>();
 
@@ -71,9 +72,7 @@ public class Snake
      * This is only a temporary effect and should be reset after a few seconds.
      */
     public void enlargeHead() {
-        Segment head = segments.get(0);
-        segments.set(0, new Segment(head.getX(), head.getY()));
-        segments.add(0, new Segment(head.getX(), head.getY()));
+        this.headEnlarged = true;
     }
 
     /**
@@ -81,12 +80,12 @@ public class Snake
      * Removes the additional segment if present.
      */
     public void resetHeadSize() {
-        if (segments.size() > 1) {
-            segments.remove(0);
-        }
+        this.headEnlarged = false;
     }
 
-
+    public boolean isHeadEnlarged() {
+        return headEnlarged;
+    }
 
     //Getter and setter region
 
