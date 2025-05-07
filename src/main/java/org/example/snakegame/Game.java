@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -33,6 +34,7 @@ public class Game extends Application {
     private final Text lengthText = new Text();
     private Timeline resetSpeedTimer;
     private Timeline resetHeadTimer;
+    private final Text gameOverText = new Text();
 
 
     private Timeline gameLoop;
@@ -56,6 +58,14 @@ public class Game extends Application {
         lengthText.setLayoutY(40);
         gamePane.getChildren().add(lengthText);
 
+        // Game over text setup
+        gameOverText.setFill(Color.WHITE);
+        gameOverText.setFont(new Font(24));
+        gameOverText.setLayoutX(50);
+        gameOverText.setLayoutY(HEIGHT * TILE_SIZE / 2);
+        gameOverText.setVisible(false); // Initially hidden
+        gamePane.getChildren().add(gameOverText);
+
         spawnFood();
 
         Scene scene = new Scene(gamePane);
@@ -75,11 +85,13 @@ public class Game extends Application {
      */
     private void setupControls(Scene scene) {
         scene.setOnKeyPressed(event -> {
-            KeyCode code = event.getCode();
-            if (code == KeyCode.UP) snake.setDirection(Direction.UP);
-            else if (code == KeyCode.DOWN) snake.setDirection(Direction.DOWN);
-            else if (code == KeyCode.LEFT) snake.setDirection(Direction.LEFT);
-            else if (code == KeyCode.RIGHT) snake.setDirection(Direction.RIGHT);
+            if (!gameOverText.isVisible()) {
+                KeyCode code = event.getCode();
+                if (code == KeyCode.UP) snake.setDirection(Direction.UP);
+                else if (code == KeyCode.DOWN) snake.setDirection(Direction.DOWN);
+                else if (code == KeyCode.LEFT) snake.setDirection(Direction.LEFT);
+                else if (code == KeyCode.RIGHT) snake.setDirection(Direction.RIGHT);
+            }
         });
     }
 
@@ -89,6 +101,10 @@ public class Game extends Application {
     private void startGameLoop() {
         gameLoop = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
             snake.move();
+            if (snake.checkEdgeCollision(WIDTH, HEIGHT) || snake.checkCollision()) {
+                gameOver();
+                return;
+            }
             checkFoodCollision();
             render();
         }));
@@ -219,11 +235,12 @@ public class Game extends Application {
 
             if (score.getScore() >= nextInsaneTrigger) {
                 triggerInsaneMode();
+                // Next trigger at +10 score
                 nextInsaneTrigger += 10;
             }
         }
-
     }
+
     /**
      * Triggers Insane Mode:
      * - Rotates the gamePane randomly (90°, 180°, 270°)
@@ -270,6 +287,55 @@ public class Game extends Application {
         gameLoop.play();
     }
 
+    /**
+     * Stops the game and displays a text
+     */
+    private void gameOver() {
+        timeline.stop();
+        gameOverText.setText("Game Over! Press any key to restart.");
+        gameOverText.setVisible(true);
+
+        // Puts the focus on the game pane
+        gamePane.requestFocus();
+        gamePane.setOnKeyPressed(null);
+
+        // Set up an event handler to restart the game pane
+        gamePane.setOnKeyPressed(event -> {
+            restartGame();
+            gamePane.setOnKeyPressed(null);
+        });
+    }
+
+    /**
+     * Method to reset the game pane back to the original state
+     */
+    private void restartGame() {
+        // Reset game state
+        snake.getSegments().clear();
+        snake.getSegments().add(new Segment(5, 5));
+        snake.setDirection(Direction.RIGHT);
+        score.resetScore();
+        scoreText.setText("Score: 0");
+        lengthText.setText("Length: 1");
+
+        // Hide game over text
+        gameOverText.setVisible(false);
+
+        // Remove existing food
+        gamePane.getChildren().remove(food.getAppleImage());
+
+        // Spawn new food
+        spawnFood();
+
+        // Resets the rotation of the game board
+        gamePane.setRotate(0);
+
+        // Restart game loop
+        startGameLoop();
+
+        // Re-enable game controls
+        setupControls(gamePane.getScene());
+    }
 
 
     public static void main(String[] args) {

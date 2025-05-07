@@ -12,6 +12,8 @@ public class Snake
     private double speed = 300; // default speed in ms
     private Direction direction = Direction.RIGHT;
     private final List<Segment> segments = new ArrayList<>();
+    private long lastDirectionChangeTime = 0;
+    private static final long TURN_DELAY = 150; // In milliseconds
 
     /**
      * Constructs a new Snake object.
@@ -68,6 +70,17 @@ public class Snake
     }
 
     /**
+     * Checks if the head is touching the edge of the pane
+     * @param width
+     * @param height
+     * @return
+     */
+    public boolean checkEdgeCollision(int width, int height) {
+        Segment head = segments.get(0);
+        return head.getX() < 0 || head.getX() >= width || head.getY() < 0 || head.getY() >= height;
+    }
+
+    /**
      * Visually enlarges the snake's head by adding an extra segment at the front.
      * This is only a temporary effect and should be reset after a few seconds.
      */
@@ -87,7 +100,7 @@ public class Snake
         return headEnlarged;
     }
 
-    //Getter and setter region
+    //region Getter and setter
 
     /**
      * Gets the current direction of the snake
@@ -98,17 +111,20 @@ public class Snake
     }
 
     /**
-     * Changes the snake's direction, if the new direction is not opposite of current direction
+     * Changes the snake's direction, if the new direction is not opposite
+     * of current direction on a delay we have predetermined
      * @param newDirection The direction to turn to.
      */
-    public void setDirection(Direction newDirection)
-    {
-        if ((this.direction == Direction.UP && newDirection != Direction.DOWN) ||
-                (this.direction == Direction.DOWN && newDirection != Direction.UP) ||
-                (this.direction == Direction.LEFT && newDirection != Direction.RIGHT) ||
-                (this.direction == Direction.RIGHT && newDirection != Direction.LEFT))
-        {
-            this.direction = newDirection;
+    public void setDirection(Direction newDirection) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastDirectionChangeTime >= TURN_DELAY) {
+            if ((this.direction == Direction.UP && newDirection != Direction.DOWN) ||
+                    (this.direction == Direction.DOWN && newDirection != Direction.UP) ||
+                    (this.direction == Direction.LEFT && newDirection != Direction.RIGHT) ||
+                    (this.direction == Direction.RIGHT && newDirection != Direction.LEFT)) {
+                this.direction = newDirection;
+                lastDirectionChangeTime = currentTime;
+            }
         }
     }
 
@@ -136,6 +152,6 @@ public class Snake
     public void setSpeed(double newSpeed) {
         this.speed = newSpeed;
     }
-
+//endregion
 
 }
