@@ -291,7 +291,7 @@ public class Game extends Application {
      * Stops the game and displays a text
      */
     private void gameOver() {
-        timeline.stop();
+        gameLoop.stop();
         gameOverText.setText("Game Over! Press any key to restart.");
         gameOverText.setVisible(true);
 
