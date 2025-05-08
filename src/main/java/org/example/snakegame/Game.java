@@ -294,6 +294,10 @@ public class Game extends Application {
         snake.getSegments().clear();
         snake.getSegments().add(new Segment(5, 5));
         snake.setDirection(Direction.RIGHT);
+
+        snake.setSpeed(250);
+        snake.resetHeadSize();
+
         score.resetScore();
         scoreText.setText("Score: 0");
         lengthText.setText("Length: 1");
