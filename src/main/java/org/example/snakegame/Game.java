@@ -246,6 +246,10 @@ public class Game extends Application {
         timeline = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
             snake.move();
             checkFoodCollision();
+            if (snake.checkEdgeCollision(WIDTH, HEIGHT) || snake.checkCollision()) {
+                gameOver();
+                return;
+            }
             render();
         }));
 
