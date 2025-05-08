@@ -183,12 +183,12 @@ public class Game extends Application {
                 case redApple -> { //No effect
                 }
                 case blueApple -> {
-                    snake.setSpeed(100);
+                    snake.setSpeed(75);
                     restartGameLoop();
 
                     if (resetSpeedTimer != null) resetSpeedTimer.stop();
                     resetSpeedTimer = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
-                        snake.setSpeed(200);
+                        snake.setSpeed(150);
                         restartGameLoop();
                     }));
                     resetSpeedTimer.play();
