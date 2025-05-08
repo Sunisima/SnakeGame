@@ -9,7 +9,7 @@ import java.util.List;
 public class Snake
 {
     private boolean headEnlarged = false; // Keep track of whether the head is enlarged.
-    private double speed = 250; // default speed in ms
+    private double speed = 200; // default speed in ms
     private Direction direction = Direction.RIGHT;
     private final List<Segment> segments = new ArrayList<>();
     private long lastDirectionChangeTime = 0;

@@ -188,7 +188,7 @@ public class Game extends Application {
 
                     if (resetSpeedTimer != null) resetSpeedTimer.stop();
                     resetSpeedTimer = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
-                        snake.setSpeed(250);
+                        snake.setSpeed(200);
                         restartGameLoop();
                     }));
                     resetSpeedTimer.play();
