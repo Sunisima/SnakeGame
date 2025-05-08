@@ -23,7 +23,7 @@ import java.util.Random;
 public class Game extends Application {
     private static final int TILE_SIZE = 20;
     private static final int WIDTH = 30;
-    private static final int HEIGHT = 20;
+    private static final int HEIGHT = 30;
 
     private final Pane gamePane = new Pane();
     private final Snake snake = new Snake();
@@ -41,6 +41,27 @@ public class Game extends Application {
 
     @Override
     public void start(Stage stage) {
+
+        setupGameBoard();
+
+        spawnFood();
+
+        Scene scene = new Scene(gamePane);
+        scene.setFill(Color.BLACK);
+        setupControls(scene);
+
+        stage.setTitle("Snake Game");
+        stage.setScene(scene);
+        stage.show();
+
+        startGameLoop();
+    }
+
+    /**
+     * Sets up the game board and the texts
+     */
+    private void setupGameBoard()
+    {
         gamePane.setPrefSize(WIDTH * TILE_SIZE, HEIGHT * TILE_SIZE);
 
         // Score text setup
@@ -62,18 +83,6 @@ public class Game extends Application {
         gameOverText.setLayoutY(HEIGHT * TILE_SIZE / 2);
         gameOverText.setVisible(false); // Initially hidden
         gamePane.getChildren().add(gameOverText);
-
-        spawnFood();
-
-        Scene scene = new Scene(gamePane);
-        scene.setFill(Color.BLACK);
-        setupControls(scene);
-
-        stage.setTitle("Snake Game");
-        stage.setScene(scene);
-        stage.show();
-
-        startGameLoop();
     }
 
     /**
