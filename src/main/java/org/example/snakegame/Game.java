@@ -36,8 +36,7 @@ public class Game extends Application {
     private Timeline resetHeadTimer;
     private final Text gameOverText = new Text();
 
-
-    private Timeline gameLoop;
+    private Timeline timeline;
 
     //Trigger insane mode when score reaches this value
     private int nextInsaneTrigger = 10;
@@ -99,7 +98,7 @@ public class Game extends Application {
      * Starts the main game loop using a Timeline.
      */
     private void startGameLoop() {
-        gameLoop = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
+        timeline = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
             snake.move();
             if (snake.checkEdgeCollision(WIDTH, HEIGHT) || snake.checkCollision()) {
                 gameOver();
@@ -108,8 +107,8 @@ public class Game extends Application {
             checkFoodCollision();
             render();
         }));
-        gameLoop.setCycleCount(Timeline.INDEFINITE);
-        gameLoop.play();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     /**
@@ -180,7 +179,7 @@ public class Game extends Application {
 
                     if (resetSpeedTimer != null) resetSpeedTimer.stop();
                     resetSpeedTimer = new Timeline(new KeyFrame(Duration.seconds(5), e -> {
-                        snake.setSpeed(300);
+                        snake.setSpeed(250);
                         restartGameLoop();
                     }));
                     resetSpeedTimer.play();
@@ -239,27 +238,27 @@ public class Game extends Application {
      */
     private void restartGameLoop() {
         // Stop the current game loop before restarting
-        if (gameLoop != null) {
-            gameLoop.stop();
+        if (timeline != null) {
+            timeline.stop();
         }
 
         // Create a new game loop with the updated speed
-        gameLoop = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
+        timeline = new Timeline(new KeyFrame(Duration.millis(snake.getSpeed()), e -> {
             snake.move();
             checkFoodCollision();
             render();
         }));
 
         // Restart the game loop
-        gameLoop.setCycleCount(Timeline.INDEFINITE);
-        gameLoop.play();
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
     }
 
     /**
      * Stops the game and displays a text
      */
     private void gameOver() {
-        gameLoop.stop();
+        timeline.stop();
         gameOverText.setText("Game Over! Press any key to restart.");
         gameOverText.setVisible(true);
 
